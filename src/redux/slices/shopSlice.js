@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // Set the base URL for Axios
 
-axios.defaults.baseURL = 'https://barbezz.shop';
+axios.defaults.baseURL = 'https://api.barbezz.shop';
 
 // Thunk for fetching all shops
 export const fetchAllShops = createAsyncThunk(
