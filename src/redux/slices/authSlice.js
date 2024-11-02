@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-axios.defaults.baseURL = 'https://barbezz.shop/';
+axios.defaults.baseURL = 'https://barbezz.shop';
 
 export const registerUser = createAsyncThunk(
   'auth/registerUser',
