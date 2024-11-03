@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 
-axios.defaults.baseURL = 'https://api.barbezz.shop';// Replace with your backend URL
+axios.defaults.baseURL = 'https://www.barbezz.shop';
 
 // Thunk for registering shopkeeper
 export const registerShopkeeper = createAsyncThunk(
