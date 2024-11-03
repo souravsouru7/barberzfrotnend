@@ -63,7 +63,7 @@ const ShopkeeperLogin = () => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = `http://localhost:5000/api/shopkeepers/auth/google`;
+    window.location.href = `https://www.barbezz.shop/api/shopkeepers/auth/google`;
   };
 
   const InputField = ({ name, type, placeholder, value, onChange, error }) => (
