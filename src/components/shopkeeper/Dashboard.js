@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { Home, User, ShoppingBag, LogOut, List, Clock, Calendar, Scissors, PowerOff, Bell } from 'lucide-react';
 import { fetchShopDetails, toggleWorkMode } from '../../redux/slices/shopSlice';
 import { logout } from '../../redux/slices/shopkeeperSlice';
@@ -12,7 +12,7 @@ const NavigationCard = ({ icon, label, to }) => (
       <div className={`
         p-4 rounded-xl transition-all duration-300
         ${isActive 
-          ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/50' 
+          ? 'bg-gradient-to-r from-pink-600 to-purple-600 text-white shadow-lg shadow-pink-500/50' 
           : 'bg-white text-gray-600 hover:bg-gray-50'}
       `}>
         <div className="flex flex-col items-center space-y-2">
@@ -26,13 +26,13 @@ const NavigationCard = ({ icon, label, to }) => (
 
 const WorkModeToggle = ({ isWorkModeOn, onToggle }) => (
   <div className="flex items-center space-x-3">
-    <span className="text-sm font-medium text-gray-700">Work Mode:</span>
+    <span className="text-sm font-medium text-gray-200">Work Mode:</span>
     <button
       onClick={onToggle}
       className={`
         relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent 
-        transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2
-        ${isWorkModeOn ? 'bg-indigo-600' : 'bg-gray-200'}
+        transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2
+        ${isWorkModeOn ? 'bg-gradient-to-r from-pink-600 to-purple-600' : 'bg-gray-200'}
       `}
     >
       <span className="sr-only">Toggle work mode</span>
@@ -81,7 +81,7 @@ const NotificationDropdown = ({ notifications, loading, onNotificationClick }) =
             key={notification._id}
             onClick={() => onNotificationClick(notification)}
             className={`px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors duration-200 ${
-              !notification.isRead ? 'bg-indigo-50' : ''
+              !notification.isRead ? 'bg-gradient-to-r from-pink-50 to-purple-50' : ''
             }`}
           >
             <div className="flex items-start">
@@ -95,7 +95,7 @@ const NotificationDropdown = ({ notifications, loading, onNotificationClick }) =
                 </p>
               </div>
               {!notification.isRead && (
-                <span className="w-2 h-2 bg-indigo-600 rounded-full mt-2"></span>
+                <span className="w-2 h-2 bg-gradient-to-r from-pink-600 to-purple-600 rounded-full mt-2"></span>
               )}
             </div>
           </div>
@@ -108,6 +108,7 @@ const NotificationDropdown = ({ notifications, loading, onNotificationClick }) =
 function Dashboard() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const { shopkeeper, token } = useSelector((state) => state.shopkeeper);
   const { shop } = useSelector((state) => state.shop);
   const { items: notifications, unreadCount, loading } = useSelector((state) => state.notifications);
@@ -200,22 +201,22 @@ function Dashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-purple-900 text-gray-200 p-6">
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center space-x-3">
-          <Scissors size={32} className="text-indigo-600" />
-          <h1 className="text-2xl font-bold text-gray-800">BaRbberZ</h1>
+          <Scissors size={32} className="text-gradient-to-r from-pink-600 to-purple-600" />
+          <h1 className="text-2xl font-bold text-gray-200">BaRbberZ</h1>
         </div>
         <div className="flex items-center space-x-4">
           {shop && <WorkModeToggle isWorkModeOn={isWorkModeOn} onToggle={handleToggleWorkMode} />}
           <div className="relative notification-dropdown">
             <button
               onClick={() => setNotificationOpen(!notificationOpen)}
-              className="p-2 hover:bg-gray-50 rounded-lg transition-colors duration-200 relative"
+              className="p-2 hover:bg-gray-700 rounded-lg transition-colors duration-200 relative"
             >
-              <Bell size={24} className="text-gray-600" />
+              <Bell size={24} className="text-gray-400" />
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-xs text-white rounded-full w-5 h-5 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-pink-600 to-purple-600 text-xs text-white rounded-full w-5 h-5 flex items-center justify-center">
                   {unreadCount}
                 </span>
               )}
@@ -230,7 +231,7 @@ function Dashboard() {
           </div>
           <button 
             onClick={handleLogout}
-            className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors duration-300"
+            className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 text-white font-bold hover:from-red-600 hover:to-red-700 transition-colors duration-300"
           >
             <LogOut size={20} />
             <span>Logout</span>
@@ -244,9 +245,11 @@ function Dashboard() {
         ))}
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm p-6">
-        <Outlet context={{ shopId: shop?._id }} />
-      </div>
+      {location.pathname !== '/dashboard' && (
+        <div className="bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-lg rounded-xl shadow-sm p-6">
+          <Outlet context={{ shopId: shop?._id }} />
+        </div>
+      )}
     </div>
   );
 }

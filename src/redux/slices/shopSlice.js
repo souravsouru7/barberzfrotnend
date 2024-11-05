@@ -43,12 +43,11 @@ const getAuthFromStorage = () => {
 // Update the addShop thunk
 export const addShop = createAsyncThunk(
   'shop/addShop',
-  async (shopData, { rejectWithValue }) => {
+  async (shopData, { rejectWithValue, getState }) => {
     try {
-
       const { shopkeeper, token } = getAuthFromStorage();
 
-      if (!shopkeeper?._id || !token) {
+      if (!shopkeeper?.id || !token) {
         throw new Error('Shopkeeper is not authenticated');
       }
 
@@ -59,7 +58,7 @@ export const addShop = createAsyncThunk(
       formData.append('description', shopData.description);
       formData.append('shopImage', shopData.shopImage);
       formData.append('licenseImage', shopData.licenseImage);
-      formData.append('ownerId', shopkeeper._id); // Use _id instead of id
+      formData.append('ownerId', shopkeeper.id);
 
       const response = await axios.post('/api/shops/add', formData, {
         headers: {
@@ -73,7 +72,7 @@ export const addShop = createAsyncThunk(
       return rejectWithValue(error.response?.data || { message: error.message });
     }
   }
-);
+)
 
 export const fetchShopDetails = createAsyncThunk(
   'shop/fetchShopDetails',
@@ -335,6 +334,7 @@ const shopSlice = createSlice({
         state.loading = false;
         state.success = true;
         state.shop = action.payload.shop;
+        state.shops = [...state.shops, action.payload.shop];
       })
       .addCase(addShop.rejected, (state, action) => {
         state.loading = false;

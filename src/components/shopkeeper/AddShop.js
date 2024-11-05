@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { addShop } from '../../redux/slices/shopSlice';
+import { addShop, resetStatus } from '../../redux/slices/shopSlice';
 import { Store, Image, Phone, FileText, Upload, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+
 const AddShop = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { shopkeeper } = useSelector(state => state.shopkeeper);
   const { loading, error, success } = useSelector(state => state.shop);
 
   const [shopData, setShopData] = useState({
     shopName: '',
+    ownerId: '',
     address: '',
     contactNumber: '',
     description: '',
@@ -18,26 +21,42 @@ const AddShop = () => {
     licenseImage: null,
   });
 
+  // Add state for file names
+  const [fileNames, setFileNames] = useState({
+    shopImage: '',
+    licenseImage: ''
+  });
+
   const [formErrors, setFormErrors] = useState({});
 
   useEffect(() => {
-    const shopkeeper = JSON.parse(localStorage.getItem('shopkeeper'));
-    const token = localStorage.getItem('token');
+    return () => {
+      dispatch(resetStatus());
+    };
+  }, [dispatch]);
 
-    if (!shopkeeper || !token) {
+  useEffect(() => {
+    if (!shopkeeper || !localStorage.getItem('token')) {
       navigate('/login');
+    } else {
+      setShopData(prevState => ({
+        ...prevState,
+        ownerId: shopkeeper.id,
+      }));
     }
-  }, [navigate]);
+  }, [navigate, shopkeeper]);
 
   useEffect(() => {
     if (success) {
+      dispatch(resetStatus());
       navigate('/dashboard');
     }
-  }, [success, navigate]);
+  }, [success, dispatch, navigate]);
 
   const validate = () => {
     let errors = {};
     if (!shopData.shopName) errors.shopName = 'Shop name is required';
+    if (!shopData.ownerId) errors.ownerId = 'Shopkeeper ID is required';
     if (!shopData.address) errors.address = 'Address is required';
     if (!shopData.contactNumber || !/^\d{10}$/.test(shopData.contactNumber)) {
       errors.contactNumber = 'Valid contact number is required (10 digits)';
@@ -53,7 +72,11 @@ const AddShop = () => {
   };
 
   const handleFileChange = (e) => {
-    setShopData({ ...shopData, [e.target.name]: e.target.files[0] });
+    const file = e.target.files[0];
+    if (file) {
+      setShopData({ ...shopData, [e.target.name]: file });
+      setFileNames({ ...fileNames, [e.target.name]: file.name });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -64,15 +87,13 @@ const AddShop = () => {
       return;
     }
     setFormErrors({});
-    
+
     try {
       await dispatch(addShop(shopData)).unwrap();
     } catch (err) {
       console.error('Failed to add shop:', err);
     }
   };
-
-
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-gray-900 to-purple-900 p-6">
@@ -170,6 +191,7 @@ const AddShop = () => {
               name="shopImage"
               onChange={handleFileChange}
               error={formErrors.shopImage}
+              fileName={fileNames.shopImage}
             />
 
             <FileUploader
@@ -178,6 +200,7 @@ const AddShop = () => {
               name="licenseImage"
               onChange={handleFileChange}
               error={formErrors.licenseImage}
+              fileName={fileNames.licenseImage}
             />
 
             <div className="flex justify-end">
@@ -242,7 +265,7 @@ const InputField = ({ icon, label, name, value, onChange, error }) => (
   </motion.div>
 );
 
-const FileUploader = ({ icon, label, name, onChange, error }) => (
+const FileUploader = ({ icon, label, name, onChange, error, fileName }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
@@ -258,11 +281,18 @@ const FileUploader = ({ icon, label, name, onChange, error }) => (
       <label className="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-700 border-dashed rounded-lg cursor-pointer hover:border-pink-500 transition-colors duration-300 bg-gray-800 bg-opacity-50">
         <div className="space-y-1 text-center">
           <Upload size={24} className="mx-auto text-gray-400" />
-          <div className="flex text-sm text-gray-400">
-            <span className="relative font-medium text-pink-500 hover:text-pink-400">
-              Click to upload
-            </span>
-            <p className="pl-1">or drag and drop</p>
+          <div className="flex flex-col text-sm text-gray-400">
+            <div className="flex justify-center">
+              <span className="relative font-medium text-pink-500 hover:text-pink-400">
+                Click to upload
+              </span>
+              <p className="pl-1">or drag and drop</p>
+            </div>
+            {fileName && (
+              <span className="mt-2 text-gray-300">
+                Selected file: {fileName}
+              </span>
+            )}
           </div>
         </div>
         <input

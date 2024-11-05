@@ -38,7 +38,6 @@ const EditShopkeeperProfile = ({ shopkeeper, onCancel, onSuccess }) => {
     }
     
     try {
-      // Make sure we're using the correct ID property (_id instead of id)
       const shopkeeperId = shopkeeper._id;
       if (!shopkeeperId) {
         throw new Error('Shopkeeper ID is missing');
@@ -55,75 +54,87 @@ const EditShopkeeperProfile = ({ shopkeeper, onCancel, onSuccess }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6 max-w-4xl mx-auto">
-      <h2 className="text-2xl font-bold mb-6">Edit Profile</h2>
+    <div className="bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-lg rounded-xl shadow-lg p-6 max-w-4xl mx-auto">
+      <h2 className="text-2xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600">
+        Edit Profile
+      </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700">Shop Name</label>
+          <label className="block text-sm font-medium text-gray-300">Shop Name</label>
           <input
             type="text"
             name="shopName"
             value={formData.shopName}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            className="mt-1 block w-full rounded-lg bg-gray-700 border-gray-600 text-gray-100 shadow-sm 
+              focus:border-pink-500 focus:ring focus:ring-pink-500 focus:ring-opacity-50"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Owner Name</label>
+          <label className="block text-sm font-medium text-gray-300">Owner Name</label>
           <input
             type="text"
             name="name"
             value={formData.name}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            className="mt-1 block w-full rounded-lg bg-gray-700 border-gray-600 text-gray-100 shadow-sm 
+              focus:border-pink-500 focus:ring focus:ring-pink-500 focus:ring-opacity-50"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Email</label>
+          <label className="block text-sm font-medium text-gray-300">Email</label>
           <input
             type="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            className="mt-1 block w-full rounded-lg bg-gray-700 border-gray-600 text-gray-100 shadow-sm 
+              focus:border-pink-500 focus:ring focus:ring-pink-500 focus:ring-opacity-50"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Contact Number</label>
+          <label className="block text-sm font-medium text-gray-300">Contact Number</label>
           <input
             type="tel"
             name="contactNumber"
             value={formData.contactNumber}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            className="mt-1 block w-full rounded-lg bg-gray-700 border-gray-600 text-gray-100 shadow-sm 
+              focus:border-pink-500 focus:ring focus:ring-pink-500 focus:ring-opacity-50"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Profile Image</label>
+          <label className="block text-sm font-medium text-gray-300">Profile Image</label>
           <input
             type="file"
             name="profileImage"
             onChange={handleFileChange}
-            className="mt-1 block w-full text-sm text-gray-500
+            className="mt-1 block w-full text-sm text-gray-300
               file:mr-4 file:py-2 file:px-4
               file:rounded-full file:border-0
               file:text-sm file:font-semibold
-              file:bg-indigo-50 file:text-indigo-700
-              hover:file:bg-indigo-100"
+              file:bg-pink-600 file:text-white
+              hover:file:bg-pink-700
+              file:transition-colors file:duration-300"
           />
         </div>
-        <div className="flex justify-end space-x-4">
+        <div className="flex justify-end space-x-4 mt-6">
           <button
             type="button"
             onClick={onCancel}
-            className="flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="flex items-center px-4 py-2 rounded-lg text-sm font-medium text-gray-300 
+              bg-gray-700 hover:bg-gray-600 transition-colors duration-300"
           >
             <X size={20} className="mr-2" />
             Cancel
           </button>
           <button
             type="submit"
-            className="flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="flex items-center px-4 py-2 rounded-lg text-sm font-medium text-white 
+              bg-gradient-to-r from-pink-600 to-purple-600 
+              hover:from-pink-700 hover:to-purple-700 
+              transition-all duration-300 transform hover:-translate-y-1 
+              shadow-lg shadow-pink-500/50"
           >
             <Save size={20} className="mr-2" />
             Save Changes

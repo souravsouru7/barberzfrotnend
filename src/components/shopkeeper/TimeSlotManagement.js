@@ -73,19 +73,27 @@ const TimeSlotManagement = () => {
   if (!shop) return <ErrorMessage message="Please add a shop first." />;
 
   return (
-    <div className="bg-gray-100">
-      <header className="flex justify-between items-center bg-white p-4 rounded-xl mb-6">
+    <div className="bg-gradient-to-br from-gray-900 to-purple-900 min-h-screen p-6">
+      <header className="flex justify-between items-center bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-lg p-4 rounded-xl mb-6 shadow-lg">
         <div className="flex items-center">
-          <Clock size={28} className="text-indigo-600 mr-2" />
-          <div className="text-2xl text-gray-800 font-bold">Manage Time Slots</div>
+          <Clock size={28} className="text-pink-500 mr-2" />
+          <div className="text-2xl text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600 font-bold">
+            Manage Time Slots
+          </div>
+        </div>
+        <div className="flex items-center space-x-4">
+          <img src="avatar.png" alt="User Avatar" className="w-10 h-10 rounded-full border-2 border-pink-500" />
+          <span className="text-gray-100 cursor-pointer">
+            {shopkeeper?.name || "Shop Owner"}
+          </span>
         </div>
       </header>
 
-      <div className="bg-white rounded-xl shadow-sm p-6">
+      <div className="bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-lg rounded-xl shadow-lg p-6">
         <div className="mb-6">
           <button 
             onClick={() => setShowModal(true)}
-            className="flex items-center bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors duration-300 shadow-lg shadow-indigo-500/50"
+            className="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white px-6 py-3 rounded-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg shadow-pink-500/50 flex items-center"
           >
             <Plus size={20} className="mr-2" />
             Add New Time Slot
@@ -93,19 +101,19 @@ const TimeSlotManagement = () => {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-gray-700">
+            <thead className="bg-gray-800 bg-opacity-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Time</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Time</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Start Time</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">End Time</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-700">
               {timeSlots && timeSlots.map((slot) => (
-                <tr key={slot._id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-800">{slot.startTime}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-800">{slot.endTime}</td>
+                <tr key={slot._id} className="hover:bg-gray-700 hover:bg-opacity-50 transition-colors duration-300">
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-100">{slot.startTime}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-100">{slot.endTime}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button 
                       onClick={() => {
@@ -114,7 +122,7 @@ const TimeSlotManagement = () => {
                         setEndTime(slot.endTime);
                         setShowModal(true);
                       }}
-                      className="text-indigo-600 hover:text-indigo-900 mr-4"
+                      className="text-pink-500 hover:text-pink-400 mr-4"
                     >
                       <Edit2 size={20} />
                     </button>
@@ -124,7 +132,7 @@ const TimeSlotManagement = () => {
                           dispatch(deleteTimeSlot({ shopId: shop._id, slotId: slot._id }));
                         }
                       }}
-                      className="text-red-600 hover:text-red-900"
+                      className="text-red-500 hover:text-red-400"
                     >
                       <Trash2 size={20} />
                     </button>
@@ -138,9 +146,9 @@ const TimeSlotManagement = () => {
 
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-xl w-full max-w-md">
+          <div className="bg-gray-800 p-6 rounded-xl w-full max-w-md shadow-lg backdrop-filter backdrop-blur-lg">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold text-gray-800">
+              <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600">
                 {editingSlot ? 'Edit Time Slot' : 'Add New Time Slot'}
               </h2>
               <button 
@@ -150,14 +158,14 @@ const TimeSlotManagement = () => {
                   setStartTime("");
                   setEndTime("");
                 }} 
-                className="text-gray-500 hover:text-gray-700"
+                className="text-gray-400 hover:text-gray-200"
               >
                 ×
               </button>
             </div>
             <form onSubmit={handleAddOrUpdateTimeSlot} className="space-y-4">
               <div>
-                <label htmlFor="start-time" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="start-time" className="block text-sm font-medium text-gray-300 mb-1">
                   Start Time
                 </label>
                 <input
@@ -165,12 +173,12 @@ const TimeSlotManagement = () => {
                   id="start-time"
                   value={startTime}
                   onChange={(e) => setStartTime(e.target.value)}
-                  className="w-full border-gray-300 rounded-lg shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                  className="w-full bg-gray-700 border-gray-600 text-gray-100 rounded-lg shadow-sm focus:border-pink-500 focus:ring-1 focus:ring-pink-500"
                   required
                 />
               </div>
               <div>
-                <label htmlFor="end-time" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="end-time" className="block text-sm font-medium text-gray-300 mb-1">
                   End Time
                 </label>
                 <input
@@ -178,14 +186,14 @@ const TimeSlotManagement = () => {
                   id="end-time"
                   value={endTime}
                   onChange={(e) => setEndTime(e.target.value)}
-                  className="w-full border-gray-300 rounded-lg shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                  className="w-full bg-gray-700 border-gray-600 text-gray-100 rounded-lg shadow-sm focus:border-pink-500 focus:ring-1 focus:ring-pink-500"
                   required
                 />
               </div>
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors duration-300 shadow-lg shadow-indigo-500/50"
+                  className="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white px-6 py-2 rounded-lg transition-all duration-300 transform hover:-translate-y-1 shadow-lg shadow-pink-500/50"
                 >
                   {editingSlot ? 'Save Changes' : 'Add Time Slot'}
                 </button>
@@ -200,14 +208,14 @@ const TimeSlotManagement = () => {
 
 const LoadingSpinner = () => (
   <div className="flex justify-center items-center h-64">
-    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
+    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
   </div>
 );
 
 const ErrorMessage = ({ message }) => (
-  <div className="bg-white p-4 rounded-xl shadow-sm border-l-4 border-red-500">
+  <div className="bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-lg p-4 rounded-xl shadow-lg border-l-4 border-red-500">
     <h3 className="text-lg font-bold text-red-500 mb-2">Error</h3>
-    <p className="text-gray-800">{message}</p>
+    <p className="text-gray-300">{message}</p>
   </div>
 );
 

@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-
 axios.defaults.baseURL = 'https://www.barbezz.shop';
 
 // Thunk for registering shopkeeper
@@ -16,6 +15,7 @@ export const registerShopkeeper = createAsyncThunk(
     }
   }
 );
+
 export const googleLogin = createAsyncThunk(
   'shopkeeper/googleLogin',
   async (tokenId, { rejectWithValue }) => {
@@ -32,7 +32,6 @@ export const googleLogin = createAsyncThunk(
   }
 );
 
-
 export const loginShopkeeper = createAsyncThunk(
   'shopkeeper/loginShopkeeper',
   async (credentials, { rejectWithValue }) => {
@@ -45,39 +44,44 @@ export const loginShopkeeper = createAsyncThunk(
   }
 );
 
-// Thunk for fetching shopkeeper profile
 export const fetchShopkeeperProfile = createAsyncThunk(
   'shopkeeper/fetchShopkeeperProfile',
   async (_, { getState, rejectWithValue }) => {
     try {
-      const { shopkeeper, token } = getState().shopkeeper;
+      const { token, shopkeeper } = getState().shopkeeper;
       
-      const shopkeeperId = shopkeeper?._id || 
-                          (localStorage.getItem('shopkeeper') ? 
-                            JSON.parse(localStorage.getItem('shopkeeper'))._id : 
-                            null);
-      const storedToken = token || localStorage.getItem('token');
-
-      if (!shopkeeperId) {
-        throw new Error('Shopkeeper ID not found.');
+      if (!token) {
+        throw new Error('Authentication token is missing');
       }
 
-      const response = await axios.get(`/api/shopkeepers/${shopkeeperId}`, {
+      if (!shopkeeper?.id) {
+        throw new Error('Shopkeeper ID is missing');
+      }
+
+      const response = await axios.get(`/api/shopkeepers/${shopkeeper.id}`, {
         headers: { 
-          Authorization: `Bearer ${storedToken}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
       });
 
+      // If the server returns the data directly
+      if (response.data && !response.data.shopkeeper) {
+        return response.data;
+      }
+
       return response.data.shopkeeper;
     } catch (error) {
-      return rejectWithValue(error.response ? 
-        error.response.data : 
-        { message: error.message }
+      console.error('Profile fetch error:', error);
+      return rejectWithValue(
+        error.response?.data || { 
+          message: error.message || 'Failed to fetch shopkeeper profile' 
+        }
       );
     }
   }
 );
+
 export const updateShopkeeper = createAsyncThunk(
   'shopkeeper/updateShopkeeper',
   async ({ id, formData }, { getState, rejectWithValue }) => {
@@ -110,20 +114,15 @@ export const updateShopkeeper = createAsyncThunk(
   }
 );
 
-
-const shopkeeperFromStorage = localStorage.getItem('shopkeeper')
-  ? JSON.parse(localStorage.getItem('shopkeeper'))
-  : null;
-
 const initialState = {
   shopkeeper: localStorage.getItem('shopkeeper')
-  ? JSON.parse(localStorage.getItem('shopkeeper'))
-  : null,
-loading: false,
-success: false,
-error: null,
-token: localStorage.getItem('token') || null,
-isAuthenticated: !!localStorage.getItem('token'),
+    ? JSON.parse(localStorage.getItem('shopkeeper'))
+    : null,
+  loading: false,
+  success: false,
+  error: null,
+  token: localStorage.getItem('token') || null,
+  isAuthenticated: !!localStorage.getItem('token'),
 };
 
 const shopkeeperSlice = createSlice({
@@ -141,19 +140,26 @@ const shopkeeperSlice = createSlice({
     },
     loginShopkeepers: (state, action) => {
       const { token, shopkeeper } = action.payload;
-      state.shopkeeper = shopkeeper;
+      state.shopkeeper = {
+        id: shopkeeper._id || shopkeeper.id, // Handle both _id and id formats
+        name: shopkeeper.name,
+        email: shopkeeper.email,
+        contactNumber: shopkeeper.contactNumber,
+        profileImage: shopkeeper.profileImage,
+        shopName: shopkeeper.shopName
+      };
       state.token = token;
       state.isAuthenticated = true;
       state.success = true;
       state.error = null;
-      
 
-      localStorage.setItem('shopkeeper', JSON.stringify(shopkeeper));
+      localStorage.setItem('shopkeeper', JSON.stringify(state.shopkeeper));
       localStorage.setItem('token', token);
     },
   },
   extraReducers: (builder) => {
     builder
+      // Register cases
       .addCase(registerShopkeeper.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -161,12 +167,24 @@ const shopkeeperSlice = createSlice({
       .addCase(registerShopkeeper.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
-        state.shopkeeper = action.payload.shopkeeper;
+        state.shopkeeper = {
+          id: action.payload.shopkeeper._id,
+          name: action.payload.shopkeeper.name,
+          email: action.payload.shopkeeper.email,
+          contactNumber: action.payload.shopkeeper.contactNumber,
+          profileImage: action.payload.shopkeeper.profileImage,
+          shopName: action.payload.shopkeeper.shopName
+        };
+        state.token = action.payload.token;
+        state.isAuthenticated = true;
+        localStorage.setItem('shopkeeper', JSON.stringify(state.shopkeeper));
+        localStorage.setItem('token', action.payload.token);
       })
       .addCase(registerShopkeeper.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload.message;
       })
+      // Login cases
       .addCase(loginShopkeeper.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -174,11 +192,18 @@ const shopkeeperSlice = createSlice({
       .addCase(loginShopkeeper.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
-        state.shopkeeper = action.payload.shopkeeper;
+        // Ensure we store the ID along with other user data
+        state.shopkeeper = {
+          id: action.payload.shopkeeper._id || action.payload.shopkeeper.id,
+          name: action.payload.shopkeeper.name,
+          email: action.payload.shopkeeper.email,
+          contactNumber: action.payload.shopkeeper.contactNumber,
+          profileImage: action.payload.shopkeeper.profileImage || '',
+          shopName: action.payload.shopkeeper.shopName || ''
+        };
         state.token = action.payload.token;
         state.isAuthenticated = true;
-
-        localStorage.setItem('shopkeeper', JSON.stringify(action.payload.shopkeeper));
+        localStorage.setItem('shopkeeper', JSON.stringify(state.shopkeeper));
         localStorage.setItem('token', action.payload.token);
       })
       .addCase(loginShopkeeper.rejected, (state, action) => {
@@ -186,19 +211,27 @@ const shopkeeperSlice = createSlice({
         state.error = action.payload.message;
         state.isAuthenticated = false;
       })
+      // Profile fetch cases
       .addCase(fetchShopkeeperProfile.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchShopkeeperProfile.fulfilled, (state, action) => {
         state.loading = false;
-        state.shopkeeper = action.payload;
         state.success = true;
+        // Update the stored shopkeeper data with the fresh data
+        state.shopkeeper = {
+          ...state.shopkeeper,
+          ...action.payload,
+          id: action.payload._id || action.payload.id
+        };
+        localStorage.setItem('shopkeeper', JSON.stringify(state.shopkeeper));
       })
       .addCase(fetchShopkeeperProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload.message;
       })
+      // Update cases
       .addCase(updateShopkeeper.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -206,13 +239,18 @@ const shopkeeperSlice = createSlice({
       .addCase(updateShopkeeper.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
-        state.shopkeeper = action.payload.shopkeeper;
-        localStorage.setItem('shopkeeper', JSON.stringify(action.payload.shopkeeper));
+        state.shopkeeper = {
+          ...state.shopkeeper,
+          ...action.payload.shopkeeper,
+          id: action.payload.shopkeeper._id || action.payload.shopkeeper.id
+        };
+        localStorage.setItem('shopkeeper', JSON.stringify(state.shopkeeper));
       })
       .addCase(updateShopkeeper.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload.message;
       })
+      // Google login cases
       .addCase(googleLogin.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -220,19 +258,26 @@ const shopkeeperSlice = createSlice({
       .addCase(googleLogin.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
-        state.shopkeeper = action.payload.shopkeeper;
+        state.shopkeeper = {
+          id: action.payload.shopkeeper._id,
+          name: action.payload.shopkeeper.name,
+          email: action.payload.shopkeeper.email,
+          contactNumber: action.payload.shopkeeper.contactNumber,
+          profileImage: action.payload.shopkeeper.profileImage,
+          shopName: action.payload.shopkeeper.shopName
+        };
         state.token = action.payload.token;
         state.isAuthenticated = true;
-        localStorage.setItem('shopkeeper', JSON.stringify(action.payload.shopkeeper));
+        localStorage.setItem('shopkeeper', JSON.stringify(state.shopkeeper));
         localStorage.setItem('token', action.payload.token);
       })
       .addCase(googleLogin.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload?.message || 'Google login failed';
         state.isAuthenticated = false;
-      })
+      });
   },
 });
 
-export const { logout,loginShopkeepers } = shopkeeperSlice.actions;
+export const { logout, loginShopkeepers } = shopkeeperSlice.actions;
 export default shopkeeperSlice.reducer;
