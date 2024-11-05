@@ -21,7 +21,6 @@ const AddShop = () => {
     licenseImage: null,
   });
 
-  // Add state for file names
   const [fileNames, setFileNames] = useState({
     shopImage: '',
     licenseImage: ''
@@ -48,10 +47,18 @@ const AddShop = () => {
 
   useEffect(() => {
     if (success) {
+     
       dispatch(resetStatus());
-      navigate('/dashboard');
+      
+      // Show a success message (optional)
+      alert('Shop added successfully!');
+      
+
+      setTimeout(() => {
+        window.location.href = '/dashboard';  // This will cause a full page refresh
+      }, 1000);
     }
-  }, [success, dispatch, navigate]);
+  }, [success, dispatch]);
 
   const validate = () => {
     let errors = {};
@@ -94,7 +101,6 @@ const AddShop = () => {
       console.error('Failed to add shop:', err);
     }
   };
-
   return (
     <div className="min-h-screen bg-gradient-to-r from-gray-900 to-purple-900 p-6">
       <motion.div

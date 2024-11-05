@@ -276,6 +276,7 @@ const initialState = {
   error: null,
   timeSlots: [],
   bookings: [],
+  isShopAdded: false,
 };
 
 // Redux slice for shop
@@ -289,14 +290,17 @@ const shopSlice = createSlice({
       state.success = false;
       state.error = null;
       state.timeSlots = []; 
+      state.isShopAdded = false;
     },
     resetShopStatus: (state) => {
       state.success = false;
       state.error = null;
+      state.isShopAdded = false;
     },
     resetStatus: (state) => {
       state.success = false;
       state.error = null;
+      state.isShopAdded = false;
     },
   },
   extraReducers: (builder) => {
@@ -329,19 +333,21 @@ const shopSlice = createSlice({
         state.loading = true;
         state.error = null;
         state.success = false;
+        state.isShopAdded = false;
       })
       .addCase(addShop.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
+        state.isShopAdded = true;
         state.shop = action.payload.shop;
-        state.shops = [...state.shops, action.payload.shop];
+        state.shops = state.shops ? [...state.shops, action.payload.shop] : [action.payload.shop];
       })
       .addCase(addShop.rejected, (state, action) => {
         state.loading = false;
         state.success = false;
+        state.isShopAdded = false;
         state.error = action.payload.message;
       })
-
       .addCase(fetchShopDetails.pending, (state) => {
         state.loading = true;
         state.error = null;
