@@ -58,14 +58,6 @@ const ViewBookings = () => {
 
   const handleSendMessage = async () => {
     if (messageContent.trim() && activeChatRoom) {
-      const optimisticMessage = {
-        senderId: shop._id,
-        content: messageContent,
-        createdAt: new Date().toISOString(),
-      };
-      dispatch(addMessage(optimisticMessage));
-      setMessageContent("");
-
       try {
         const result = await dispatch(sendMessage({
           senderId: shop._id,
@@ -73,7 +65,9 @@ const ViewBookings = () => {
           content: messageContent,
           chatRoomId: activeChatRoom._id
         })).unwrap();
+
         dispatch(addMessage(result));
+        setMessageContent("");
       } catch (error) {
         console.error("Failed to send message:", error);
       }

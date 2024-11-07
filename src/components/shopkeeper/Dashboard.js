@@ -5,6 +5,7 @@ import { Home, User, ShoppingBag, LogOut, List, Clock, Calendar, Scissors, Power
 import { fetchShopDetails, toggleWorkMode } from '../../redux/slices/shopSlice';
 import { logout } from '../../redux/slices/shopkeeperSlice';
 import { fetchNotifications, markAsRead } from '../../redux/slices/notificationSlice';
+import AnalyticsDashboard from './AnalyticsDashboard'; // Make sure this path is correct
 
 const NavigationCard = ({ icon, label, to }) => (
   <NavLink to={to}>
@@ -202,6 +203,7 @@ function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-purple-900 text-gray-200 p-6">
+      {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center space-x-3">
           <Scissors size={32} className="text-gradient-to-r from-pink-600 to-purple-600" />
@@ -239,17 +241,21 @@ function Dashboard() {
         </div>
       </div>
 
+      {/* Navigation Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-6">
         {navigationItems.map((item, index) => (
           <NavigationCard key={index} {...item} />
         ))}
       </div>
 
-      {location.pathname !== '/dashboard' && (
-        <div className="bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-lg rounded-xl shadow-sm p-6">
+      {/* Main Content Area */}
+      <div className="bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-lg rounded-xl shadow-sm p-6">
+        {location.pathname === '/dashboard' ? (
+          <AnalyticsDashboard />
+        ) : (
           <Outlet context={{ shopId: shop?._id }} />
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

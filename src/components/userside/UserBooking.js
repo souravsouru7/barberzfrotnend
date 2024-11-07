@@ -131,15 +131,6 @@ const UserBookings = () => {
 
   const handleSendMessage = async () => {
     if (messageContent.trim() && activeChatRoom) {
-      // Optimistically update local state
-      const optimisticMessage = {
-        senderId: user._id,
-        content: messageContent,
-        createdAt: new Date().toISOString(),
-      };
-      dispatch(addMessage(optimisticMessage));
-      setMessageContent("");
-
       try {
         const result = await dispatch(sendMessage({
           senderId: user._id,
@@ -147,12 +138,12 @@ const UserBookings = () => {
           content: messageContent,
           chatRoomId: activeChatRoom._id
         })).unwrap();
-        
-        // Replace optimistic message with actual message from server
+  
+        // Update the local state with the message from the server
         dispatch(addMessage(result));
+        setMessageContent("");
       } catch (error) {
         console.error("Failed to send message:", error);
-        // You might want to implement a way to remove the optimistic message if sending failed
       }
     }
   };
@@ -197,9 +188,7 @@ const UserBookings = () => {
             <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300">
               Reschedule
             </button>
-            <button className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-300">
-              Cancel
-            </button>
+           
             <button
           className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded transition duration-300 flex items-center"
           onClick={() => handleCreateChatRoom(booking)}

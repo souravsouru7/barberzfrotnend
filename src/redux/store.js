@@ -9,6 +9,7 @@ import timeSlotReducer from './slices/timeSlotSlice';
 import chatReducer from './slices/Chat';
 import notificationReducer from './slices/notificationSlice';
 import reviewReducer from './slices/reviewSlice';
+import analyticsReducer from './slices/analyticsSlice';
 const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -21,6 +22,7 @@ const store = configureStore({
     chat: chatReducer,
     notifications: notificationReducer,
     reviews: reviewReducer,
+    analytics: analyticsReducer,
     
    
   },

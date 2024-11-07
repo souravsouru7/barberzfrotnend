@@ -11,6 +11,7 @@ import ServiceManagement from '../components/shopkeeper/ServiceManagement';
 import TimeSlotManagement from '../components/shopkeeper/TimeSlotManagement';
 import ViewBookings from '../components/shopkeeper/ViewBookings';
 import AuthCallback from '../components/shopkeeper/AuthCallback';
+import AnalyticsDashboard from '../components/shopkeeper/AnalyticsDashboard';
 function ShopKeeperRoutes() {
   return (
     <Routes>
@@ -20,7 +21,7 @@ function ShopKeeperRoutes() {
       <Route path="/auth-callback" element={<AuthCallback />} />
       {/* Dashboard Layout with Nested Routes */}
       <Route path='/dashboard' element={<Dashboard />}>
-        <Route index element={<ShopDetails />} /> {/* Default dashboard view */}
+      <Route index element={<AnalyticsDashboard />} />
         <Route path="profile" element={<ShopkeeperProfile />} />
         <Route path="addshop" element={<AddShop />} />
         <Route path="shopdetails" element={<ShopDetails />} />
