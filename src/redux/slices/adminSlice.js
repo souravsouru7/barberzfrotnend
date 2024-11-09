@@ -1,13 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-axios.defaults.baseURL = 'http://localhost:5000';
+axios.defaults.baseURL = 'https://www.barbezz.shop';
 
 
 const initialState = {
    
     shopkeepers: [],
-    shopkeepersStatus: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+    shopkeepersStatus: 'idle', // 'idle' | 'loing' | 'succeeded' | 'failed'
     shopkeepersError: null,
     shopkeeper: null, // New state for a shopkeeper's details
     shopkeeperStatus: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'

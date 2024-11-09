@@ -1,6 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-axios.defaults.baseURL = 'http://localhost:5000';
+
+
+axios.defaults.baseURL = 'https://www.barbezz.shop';
+
 // Existing actions
 export const addReview = createAsyncThunk(
   'reviews/addReview',
