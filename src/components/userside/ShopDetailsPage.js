@@ -231,6 +231,36 @@ const ShopDetailsPage = () => {
               </div>
             </section>
           )}
+           {activeSection === "services" && (
+            <section className="mb-16 animate-fade-in">
+              <h2 className="text-4xl font-bold mb-8 text-pink-500">
+                Our Services
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {currentShop.services && currentShop.services.map((service) => (
+                  <div
+                    key={service._id}
+                    className="bg-gray-800 rounded-lg p-6 shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
+                    onClick={() => openModal(service)}
+                  >
+                    <div className="flex items-center mb-4">
+                      <Scissors className="text-pink-500 mr-3" size={24} />
+                      <h3 className="text-xl font-semibold text-white">
+                        {service.serviceName}
+                      </h3>
+                    </div>
+                    <div className="mb-4">
+                      <p className="text-gray-400">Duration: {service.duration} minutes</p>
+                      <p className="text-2xl font-bold text-pink-500 mt-2">
+                        ${service.price}
+                      </p>
+                    </div>
+                 
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
 
           {activeSection === "reviews" && (
             <section className="mb-16 animate-fade-in">
