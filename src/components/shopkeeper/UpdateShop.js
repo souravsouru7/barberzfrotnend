@@ -6,10 +6,14 @@ import { Scissors } from 'lucide-react';
 
 const UpdateShop = () => {
   const { state } = useLocation(); 
-  const { shopId } = state || {}; 
+  const shop = useSelector((state) => state.shop.shop);
+  const token = useSelector((state) => state.auth.token); // Make sure you're getting token from the correct slice
+  const loading = useSelector((state) => state.shop.loading);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { shop, token, loading } = useSelector((state) => state.shop);
+
+  // Get shopId from either state or current shop
+  const shopId = state?.shopId || shop?._id;
 
   const [shopData, setShopData] = useState({
     shopName: '',
@@ -21,10 +25,14 @@ const UpdateShop = () => {
   });
 
   useEffect(() => {
-    if (shopId && !shop) {
+    // Only fetch if we have shopId and token
+    if (shopId && token) {
       dispatch(fetchShopDetails({ ownerId: shopId, token }));
+    } else {
+      console.error('Missing shopId or token:', { shopId, token });
+      navigate('/dashboard/shopdetails'); // Redirect if no shopId
     }
-  }, [dispatch, shopId, shop, token]);
+  }, [dispatch, shopId, token, navigate]);
 
   useEffect(() => {
     if (shop) {
@@ -45,22 +53,34 @@ const UpdateShop = () => {
     });
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    dispatch(updateShop({ shopId, shopData, token }))
-      .then(() => {
-        navigate('/dashboard/shopdetails');
-      });
+    
+    if (!shopId) {
+      console.error('No shopId available for update');
+      return;
+    }
+
+    try {
+      await dispatch(updateShop({ 
+        shopId, 
+        shopData, 
+        token 
+      })).unwrap();
+      navigate('/dashboard/shopdetails');
+    } catch (error) {
+      console.error('Error updating shop:', error);
+      // Handle error (you might want to show an error message to the user)
+    }
   };
 
   if (loading) {
     return <LoadingSpinner />;
   }
 
-  if (!shop) {
+  if (!shop || !shopId) {
     return <ErrorMessage message="No shop data available to update." />;
   }
-
   return (
     <div className="bg-gradient-to-br from-gray-900 to-purple-900 min-h-screen p-6">
       <header className="flex justify-between items-center bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-lg p-4 rounded-xl mb-6 shadow-lg">
