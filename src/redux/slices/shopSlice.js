@@ -92,6 +92,10 @@ export const fetchShopDetails = createAsyncThunk(
 export const updateShop = createAsyncThunk(
   'shop/updateShop',
   async ({ shopId, shopData, token }, { rejectWithValue }) => {
+    if (!shopId) {
+      return rejectWithValue({ message: 'Shop ID is required' });
+    }
+
     try {
       const formData = new FormData();
       formData.append('shopName', shopData.shopName);
@@ -110,7 +114,10 @@ export const updateShop = createAsyncThunk(
 
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response ? error.response.data : { message: error.message });
+      console.error('Update shop error:', error);
+      return rejectWithValue(error.response?.data || { 
+        message: error.message || 'Failed to update shop' 
+      });
     }
   }
 );
